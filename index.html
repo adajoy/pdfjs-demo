@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script src="./pdf.min.js"></script>
+    <script src="./pdf.worker.min.js"></script>
+    <script>
+      pdfjsLib
+        .getDocument('./TypeScript Language Specification.pdf')
+        .promise.then(pdf => {
+          for (let i = 1; i <= pdf.numPages; i++) {
+            pdf.getPage(i).then(page => {
+              const id = `the-canvas${i}`;
+              const canvasElement = document.createElement('canvas');
+              canvasElement.id = id;
+              document.body.appendChild(canvasElement);
+              const scale = 1;
+              const viewport = page.getViewport({ scale: scale });
+              const canvas = document.getElementById(id);
+              const context = canvas.getContext('2d');
+              canvas.height = viewport.height;
+              canvas.width = viewport.width;
+
+              const renderContext = {
+                canvasContext: context,
+                viewport: viewport
+              };
+              page.render(renderContext);
+            });
+          }
+        });
+    </script>
+  </body>
+</html>
